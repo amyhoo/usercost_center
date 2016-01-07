@@ -1,0 +1,166 @@
+{% extends 'base_ajax.html' %} {% block content %}
+    {% load staticfiles %}
+    <style>
+        a{
+            cursor: pointer;
+        }
+        a:hover{
+            text-decoration:none;
+        }
+    </style>
+    <div class="row highlight_bar">
+    </div>
+    <div class="row search_combo">
+        <form class="form-inline" role="form" onSubmit="return table_filter(this);">
+            {% csrf_token %}
+            <div class="form-group" style="padding: 5px">
+                <label for="input1">xx</label>
+                <select class="form-control" id="input1">
+                <option value="">全部</option>
+            </select>
+            </div>
+            <button type="button" class="btn btn-default" onclick="search();">查询</button>
+        </form>
+    </div>
+    <div class="row">
+        <table id='childaccount' data-url="{{root_url}}/center/childaccountdata"
+               data-side-pagination="server" data-width="100" data-pagination="true"
+               data-page-list="[5, 10, 20, 50, 100, 200]">
+            <thead>
+            <tr>
+                <th data-field="xx" data-formatter="name_formatter">xx</th>
+                <th data-field="xx"  >xx</th>
+                <th data-field="xx" data-formatter="type_formatter">xx</th>
+                <th data-field="xxx" data-formatter="money_formatter">xx</th>
+                <th data-field="xx" data-formatter="money_formatter">xx</th>
+                <th data-field="xx" data-formatter="money_formatter">xx(元)</th>
+                <th data-field="xx" data-formatter="operation_formatter">xx</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row"></div>
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" data-backdrop="static"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" id="modal-dialog1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true" style="margin-top:-8px">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel1">
+                        线下充值
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="instead_recharge">
+                        <form class="form row search_combo" role="form" id="instead">
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-6">
+                        <button type="button"
+                                data-dismiss="modal" id="discount_close_model" style="float:right">关闭
+                        </button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="button" id="discount_confirm_model" style="float:left" onclick="instead_recharge();">
+                            充值
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" data-backdrop="static"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" id="modal-dialog2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true" style="margin-top:-8px">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel2">
+                        赠送
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="gift_recharge">
+                        <form class="form row search_combo" role="form" id="gift">
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-6">
+                        <button type="button"
+                                data-dismiss="modal" id="discount_close_model" style="float:right">关闭
+                        </button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="button" id="discount_confirm_model" style="float:left" onclick="gift_recharge();">
+                            充值
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+
+    <script>
+        var sub_account_id='';
+        function operation_formatter(value, row) {
+            sub_account=row['account_id'];
+            return '<a onclick="'+'sub_account_id='+"'"+sub_account+"';"+'$('+"'#myModal1'"+").modal();"+'"><font color="#ffb52e">xx</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                    '<a onclick="'+'sub_account_id='+"'"+sub_account+"';"+'$('+"'#myModal2'"+").modal();"+'"><font color="#ffb52e">xx</font></a>'
+        }
+        function instead_recharge(){
+            var request_data={
+
+            };
+            htmlobj= $.ajax({url:'{{root_url}}/center/insteadRecharge',type:"post",data:{recharge:JSON.stringify(request_data)}, async:false,
+                success:function (data){
+                    if (data=='success'){
+                        $('#myModal1').modal('toggle');
+                        alert("充值成功!");
+                        $("#childaccount").bootstrapTable('refresh');
+                    }
+                    else{
+                        $('#myModal1').modal('toggle');
+                        alert("充值失败!");
+                    }
+                },
+                error: function (data, status, e) {
+                    $('#myModal1').modal('toggle');
+                    alert("充值失败!");
+                }
+            });
+
+        }
+        function gift_recharge(){
+            request_data={
+                "gift":{}
+            };
+            htmlobj= $.ajax({url:'{{root_url}}/center/giftRecharge/'+sub_account_id,type:"post",data:{recharge:JSON.stringify(request_data)}, async:false,
+                success:function (data){
+                    if (data=='success'){
+                        $('#myModal2').modal('toggle');
+                        alert("赠送成功!");
+                        $("#childaccount").bootstrapTable('refresh');
+                    }
+                    else{
+                        $('#myModal2').modal('toggle');
+                        alert("赠送失败!");
+                    }
+                },
+                error: function (data, status, e) {
+                    $('#myModal2').modal('toggle');
+                    alert("赠送失败!");
+                }
+            });
+        }
+    </script>
+{% endblock %}

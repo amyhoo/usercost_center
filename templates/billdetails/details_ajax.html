@@ -1,0 +1,38 @@
+{% extends 'base_ajax.html' %}
+
+
+{% block content %}
+    <div class="row highlight_bar">
+    </div>
+    <div class="row child_title">
+    </div>
+    <div class="row">
+        <table id='forecast' data-url="{{root_url}}/center/forecast" data-width="100" data-toggle="table">
+            <thead>
+            <tr>
+                <th data-field="xx"  data-formatter="cal_format">xx</th>
+                <th data-field="xx" data-formatter="total" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xxx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+                <th data-field="xx" data-formatter="money_formatter" >xx</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script>
+
+        $("#forecast").bootstrapTable({
+            'onPageChange':function(number, size){
+            }
+        });
+        $(".moneyformatter").each(function(){
+            $(this).text(money_formatter($(this).text()))
+        });
+    </script>
+{% endblock %}
